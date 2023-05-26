@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/zyx_train_ticket_system.dir/main.cpp.o  -o zyx_train_ticket_system 

@@ -1,3 +1,0 @@
-/mnt/c/Users/123/CLionProjects/zyx_train_ticket_system/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/123/CLionProjects/zyx_train_ticket_system/cmake-build-debug/CMakeFiles/edit_cache.dir
-/mnt/c/Users/123/CLionProjects/zyx_train_ticket_system/cmake-build-debug/CMakeFiles/zyx_train_ticket_system.dir
