@@ -43,7 +43,7 @@ namespace sjtu{
                 ++i;
             }
         }
-        void write_inf(int loc,information &inf){
+        void write_inf(int loc, information &inf){
             file.seekp((loc-1)* sizeof(information));
             file.write(reinterpret_cast<char *>(&inf), sizeof(information));
         }
@@ -72,19 +72,26 @@ namespace sjtu{
         ~MapDatabase(){
             write_index();
         }
-        void insert(key k,information inf){
+        void insert(const key k, information inf){
             ++len;
             ++amount;
             pair<const key,int> p(k,amount);
             index.insert(p);
             write_inf(amount,inf);
         }
-        void erase(key k){
+        void erase(const key k){
             --len;
             auto it=index.find(k);
             if(it!=index.end()) index.erase(it);
         }
-        information find(key k){
+        bool exist(const key k){
+            auto it=index.find(k);
+            if(it!=index.end()){
+                return true;
+            }
+            return false;
+        }
+        information find(const key k){
             auto it=index.find(k);
             if(it!=index.end()){
                 int i=it->second;
@@ -94,14 +101,19 @@ namespace sjtu{
             }
             return information();
         }
-        void change(key k,information inf){
+        void change( const key k, information inf){
             auto it=index.find(k);
             if(it==index.end()) return;
             write_inf(it->second,inf);
         }
         void clear(){
+            len=0;
+            amount=0;
             remove(file_name.c_str());
             remove(index_file_name.c_str());
+        }
+        bool empty(){
+            return len==0;
         }
     };
 }

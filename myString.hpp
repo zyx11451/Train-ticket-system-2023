@@ -6,6 +6,7 @@
 #define VECTOR_HPP_MYSTRING_HPP
 #include <string>
 #include <iostream>
+#include <cstring>
 template<int length>
 class my_string{
 private:
@@ -261,13 +262,13 @@ public:
         total_minutes=other.total_minutes;
         return *this;
     }
-    int show_day(){
+    int show_day() const{
         return total_minutes/1440;
     }
-    int show_hour(){
-        return total_minutes/60;
+    int show_hour() const{
+        return (total_minutes%1440)/60;
     }
-    int show_minute(){
+    int show_minute() const{
         return total_minutes%60;
     }
 
