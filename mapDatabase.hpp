@@ -72,7 +72,7 @@ namespace sjtu{
         ~MapDatabase(){
             write_index();
         }
-        void insert(const key k, information inf){
+        void insert(const key &k, information &inf){
             ++len;
             ++amount;
             pair<const key,int> p(k,amount);

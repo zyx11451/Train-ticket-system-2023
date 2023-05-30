@@ -8,5 +8,5 @@
 using namespace std;
 void processLine(std::string &target);
 int main() {
-    UsersInformation a;
+    Command c;
 }

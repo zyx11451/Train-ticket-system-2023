@@ -49,7 +49,7 @@ public:
 public:
     UsersInformation(std::string a="users",std::string b="users_index"):data(a,b){};
     ~UsersInformation()=default;
-    void insert( User::key key_, User::information inf){
+    void insert(const User::key& key_, User::information& inf){
         data.insert(key_,inf);
     }
     User::information find(const User::key &k){

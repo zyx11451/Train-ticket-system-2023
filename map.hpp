@@ -648,7 +648,7 @@ namespace sjtu {
                 target->colour = black;
                 return;
             } else if (is_root(target->father)) {
-                target->father->colour == black;
+                target->father->colour = black;
                 return;
             } else {
                 //父亲为黑色时不用动

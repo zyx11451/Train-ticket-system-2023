@@ -26,7 +26,7 @@ public:
 
     ~my_string()=default;
 
-    explicit operator std::string (){
+    explicit operator std::string () const{
         std::string ans(strlen(c),c[0]);
         for(int i=0;i< strlen(c);++i){
             ans[i]=c[i];
@@ -65,16 +65,19 @@ public:
     bool operator<=(const my_string &b) const{
         return (strcmp(c,b.c)<=0);
     }
+    friend std::ostream &operator <<(std::ostream &out,const my_string&a){
+        out<<std::string(a);
+        return out;
+    };
 };
 
 class Calendar{
+public:
     int date;
     int month;
-    //int year;
-    //int day;
     int dis;
     int number_of_day[13];
-public:
+
     void date_to_dis(){
         for(int i=1;i<=month-1;i++){
             dis+=number_of_day[i];
@@ -126,42 +129,42 @@ public:
         number_of_day[12]=31;
         date_to_dis();
     }
-    bool operator==(const Calendar &a){
+    bool operator==(const Calendar &a) const{
         if(dis==a.dis){
             return  true;
         }else{
             return false;
         }
     }
-    bool operator>(const Calendar &a){
+    bool operator>(const Calendar &a) const{
         if(dis>a.dis){
             return true;
         }else{
             return false;
         }
     }
-    bool operator<(const Calendar &a){
+    bool operator<(const Calendar &a) const{
         if(dis<a.dis){
             return true;
         } else{
             return false;
         }
     }
-    bool operator>=(const Calendar &a){
+    bool operator>=(const Calendar &a) const{
         if(dis>=a.dis){
             return true;
         }else{
             return false;
         }
     }
-    bool operator<=(const Calendar &a){
+    bool operator<=(const Calendar &a) const{
         if(dis<=a.dis){
             return  true;
         }else{
             return false;
         }
     }
-    bool operator!=(const Calendar &a){
+    bool operator!=(const Calendar &a) const{
         if(dis!=a.dis){
             return true;
         }else{
@@ -178,19 +181,19 @@ public:
         dis_to_day();
         return *this;
     }
-    Calendar operator+(int a){
+    Calendar operator+(int a) const{
         Calendar ans;
         ans.dis=dis+a;
         ans.dis_to_day();
         return ans;
     }
-    Calendar operator-(int a){
+    Calendar operator-(int a) const{
         Calendar ans;
         ans.dis=dis-a;
         ans.dis_to_day();
         return ans;
     }
-    int operator-(const Calendar &a){
+    int operator-(const Calendar &a) const{
         return dis-a.dis;
     }
     Calendar operator++(){
@@ -250,11 +253,16 @@ public:
     Time(int h,int m){
         total_minutes=h*60+m;
     }
-    Time& operator+(int min){
+    Time& operator+=(int min){
         total_minutes+=min;
         return *this;
     }
-    int operator-(const Time &other){
+    Time operator+(const int min) const{
+        Time a;
+        a.total_minutes=total_minutes+min;
+        return a;
+    }
+    int operator-(const Time &other) const{
         return total_minutes-other.total_minutes;
     }
     Time& operator=(const Time &other){
@@ -271,6 +279,36 @@ public:
     int show_minute() const{
         return total_minutes%60;
     }
-
+    void clean_day(){
+        total_minutes%=1440;
+    }
+    operator std::string()const{
+        std::string a="00:00";
+        int h=show_hour();
+        int m=show_minute();
+        a[1]=char(h%10+'0');
+        a[0]=char(h/10+'0');
+        a[4]=char(m%10+'0');
+        a[3]=char(m/10+'0');
+        return a;
+    }
+    friend std::ostream &operator <<(std::ostream &out,const Time&a){
+        out<<std::string(a);
+        return out;
+    };
+};
+class ConcreteTime{
+    Calendar date;
+    Time t;
+public:
+    ConcreteTime()=default;
+    ConcreteTime(int m,int d,int h,int min): date(m,d),t(h,min){};
+    ConcreteTime& operator+=(int min){
+        t+=min;
+        if(t.show_day()>=1){
+            date+=t.show_day();
+            t.clean_day();
+        }
+    }
 };
 #endif //VECTOR_HPP_MYSTRING_HPP
