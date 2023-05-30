@@ -9,6 +9,7 @@
 #include <iostream>
 #include "users.hpp"
 #include "trains.hpp"
+#include "orders.hpp"
 class CommandScanner{
 public:
     enum Mode{
@@ -82,6 +83,8 @@ private:
     int timeStamp;
     CommandScanner nowCommand;
     UsersInformation u;//用户信息
+    TrainInformationSystem tr;
+    OrderInformationSystem ord;
     sjtu::map<UsersInformation::User::key,int> log_in;//已登录用户和其privilege;
     void add_user(){
         UsersInformation::User::key new_k;
@@ -117,15 +120,17 @@ private:
                     break;
             }
         }
+        bool flag= false;
         if(u.empty()){
             g=10;
+            flag= true;
+        }else{
+            auto it=log_in.find(c);
+            if(it!=log_in.end()){
+                if(it->second>g) flag= true;
+            }
+            if(u.exist(user)) flag= false;
         }
-        bool flag= false;
-        auto it=log_in.find(c);
-        if(it!=log_in.end()){
-            if(it->second>g) flag= true;
-        }
-        if(u.exist(user)) flag= false;
         if(flag){
             message("0");
             new_k.user_ID=user;
@@ -137,9 +142,6 @@ private:
         }else{
             message("-1");
         }
-    };
-    void modify_user(){
-
     };
     void login(){
         std::string user;
@@ -169,7 +171,7 @@ private:
             sjtu::pair<UsersInformation::User::key,int> new_pair(user,u.find(user).privilege);
             log_in.insert(new_pair);
         }else{
-            message("1");
+            message("-1");
         }
 
     };
@@ -241,7 +243,11 @@ private:
         std::string p;
         std::string n;
         std::string m;
-        int g;
+        int g=-1;
+        bool p_changed= false;
+        bool n_changed= false;
+        bool m_changed= false;
+        bool g_changed= false;
         while(nowCommand.hasMoreTokens()){
             char k=nowCommand.getKey();
             switch (k) {
@@ -253,25 +259,62 @@ private:
                     break;
                 case 'p':
                     p=nowCommand.getToken();
+                    p_changed= true;
                     break;
                 case 'n':
                     n=nowCommand.getToken();
+                    n_changed=true;
                     break;
                 case 'm':
                     m=nowCommand.getToken();
+                    m_changed=true;
                     break;
                 case 'g':
                     g=nowCommand.getInt();
+                    g_changed=true;
                     break;
                 default:
                     break;
             }
         }
+        bool flag= true;
+        auto it=log_in.find(c);
+        if(it==log_in.end()) flag= false;
+        if(!u.exist(user)) flag= false;
+        if(flag){
+            UsersInformation::User::information inf=u.find(user);
+            if(it->second<=inf.privilege){
+                if(c!=user) flag= false;
+            }
+            if(it->second<=g) flag= false;
+            if(flag){
+                if(p_changed) inf.password=p;
+                if(n_changed) inf.name=n;
+                if(m_changed) inf.mail_address=m;
+                if(g_changed) inf.privilege=g;
+                std::string ans;
+                ans+=user;
+                ans+=' ';
+                ans+=std::string(inf.name);
+                ans+=' ';
+                ans+=std::string(inf.mail_address);
+                ans+=' ';
+                ans+=char ('0'+inf.privilege);
+                message(ans);
+                return;
+            }
+        }
+        message("-1");
+    };
+    void add_train(){
 
     };
-    void add_train();
-    void delete_train();
-    void release_train();
+    void delete_train(){
+
+    };
+    void release_train(){
+
+    };
     void query_train();
     void query_ticket();
     void query_transfer();
@@ -282,6 +325,7 @@ private:
 
     };
     void exit(){
+        log_in.clear();
         message("bye");
         std::exit(0);
     };
