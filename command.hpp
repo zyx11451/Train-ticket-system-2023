@@ -588,7 +588,7 @@ private:
                 ++i;
                 continue;
             }
-            if(c<from_stop.begin_sale_date||c>from_stop.end_sale_date){
+            if(c<from_stop.begin_sale_date+from_stop.arrival_time.show_day()||c>from_stop.end_sale_date+from_stop.arrival_time.show_day()){
                 ++i;
                 continue;
             }
