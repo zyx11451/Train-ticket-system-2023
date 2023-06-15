@@ -592,24 +592,25 @@ private:
                 ++i;
                 continue;
             }
-            //todo 接下来均为合理的
+            // 接下来均为合理的
+            TrainInformationSystem::key k_;
+            k_.train_ID=from_stop.train_ID;
+            TrainInformationSystem::train_basic_information tbi=tr.train_inf.find(k_);
+            TrainInformationSystem::ticket answer;
+            answer.train_ID=k_.train_ID;
+            answer.price=tbi.total_prices[to_stop.station_cur]-tbi.total_prices[from_stop.station_cur];
+            answer.begin_date=c;
+            answer.begin_time=from_stop.departure_time;//忽视天数
+            answer.end_time=to_stop.arrival_time;
+            answer.end_date=c+(answer.end_time.show_day()-answer.begin_time.show_day());
+            ans.push_back(answer);
         }
     };
-    void query_transfer(){
-
-    };
-    void query_order(){
-
-    };
-    void buy_ticket(){
-
-    };
-    void refund_ticket(){
-
-    };
-    void clean(){
-
-    };
+    void query_transfer(){};
+    void query_order(){};
+    void buy_ticket(){};
+    void refund_ticket(){};
+    void clean(){};
     void exit(){
         log_in.clear();
         message("bye");

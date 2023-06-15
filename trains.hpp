@@ -153,14 +153,18 @@ public:
         my_string<21> train_ID;
         int price;
         int max_seat;
-        Time begin;
-        Time end;
+        Calendar begin_date;
+        Calendar end_date;
+        Time begin_time;
+        Time end_time;
     };
     struct transfer{
         my_string<21> train_ID_1;
         my_string<21> train_ID_2;
         int price;
         int max_seat;
+        Calendar begin_date;
+        Calendar end_date;
         Time begin;
         Time end;
     };
