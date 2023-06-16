@@ -6,7 +6,7 @@
 #include "users.hpp"
 using namespace std;
 int main() {
-    //freopen("10.in","r",stdin);
+    //freopen("1.in","r",stdin);
     //freopen("a.out","w",stdout);
     Command c;
     bool clean_mode= false;//测试用

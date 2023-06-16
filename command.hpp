@@ -979,7 +979,7 @@ private:
             return;
         }
         sjtu::vector<OrderInformationSystem::order> all=ord.all_orders.dis(user);
-        if(n>all.size()){
+        if(n>all.size()||all[n-1].order_status==OrderInformationSystem::refunded){
             message("-1");
             return;
         }
