@@ -3,10 +3,27 @@
 //
 //一个靠map在内存里存储索引的类，用于user和train的存储
 #include "map.hpp"
+#include "vector.hpp"
 #include <fstream>
 #ifndef BPT_HPP_MAPDATABASE_HPP
 #define BPT_HPP_MAPDATABASE_HPP
 namespace sjtu{
+    template<class T>
+    void sort(sjtu::vector<T> tar,int begin,int end,bool(*cmp)(T&,T&)){
+        //end是最后一个元素指针
+        if(end<=begin) return;
+        int i=begin;
+        int j=end;
+        int e=begin+((end-begin+1)>>1);
+        while(true){
+            while(cmp(tar[i],tar[e])) ++i;
+            while(cmp(tar[e],tar[j])) --j;
+            if(i>=j) break;
+            std::swap(tar[i],tar[j]);
+        }
+        sort(tar,begin,j-1,cmp);
+        sort(tar,j+1,end,cmp);
+    }
     template<class key,class information>
     class MapDatabase{
     private:

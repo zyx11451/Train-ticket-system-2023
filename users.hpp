@@ -64,5 +64,8 @@ public:
     bool empty(){
         return data.empty();
     }
+    void clean(){
+        data.clear();
+    }
 };
 #endif //VECTOR_HPP_USERS_HPP

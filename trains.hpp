@@ -144,19 +144,60 @@ public:
             }
         }
         void modify(int l,int r,int v){
+            //算r
             for(int i=l;i<=r;++i){
                 remain[i]+=v;
             }
+        }
+        int max_available(int l,int r){
+            //第l站到第r站（因此不算r）
+            int ans=remain[l];
+            for(int i=l+1;i<r;++i){
+                ans= std::min(ans,remain[i]);
+            }
+            return ans;
         }
     };
     struct ticket{
         my_string<21> train_ID;
         int price;
         int max_seat;
-        Calendar begin_date;
-        Calendar end_date;
         Time begin_time;
         Time end_time;
+        static bool cmp_cost(TrainInformationSystem::ticket &l, TrainInformationSystem::ticket &r){
+            if(l.price!=r.price) return l.price<r.price;
+            else return l.train_ID<r.train_ID;
+        }
+        static bool cmp_time(TrainInformationSystem::ticket &l, TrainInformationSystem::ticket &r){
+            if((l.end_time-l.begin_time)!=(r.end_time-r.begin_time)) return (l.end_time-l.begin_time)!=(r.end_time-r.begin_time);
+            else return l.train_ID<r.train_ID;
+        }
+    };
+    struct station_and_time{
+        my_string<31> station_ID;
+        Time t;
+        bool operator<(const station_and_time& other) const{
+            if(station_ID!=other.station_ID) return station_ID<other.station_ID;
+            else return t<other.t;
+        }
+        bool operator<=(const station_and_time& other) const{
+            if(station_ID!=other.station_ID) return station_ID<other.station_ID;
+            else return t<=other.t;
+        }
+        bool operator>(const station_and_time& other) const{
+            if(station_ID!=other.station_ID) return station_ID>other.station_ID;
+            else return t>other.t;
+        }
+        bool operator>=(const station_and_time& other) const{
+            if(station_ID!=other.station_ID) return station_ID>other.station_ID;
+            else return t>=other.t;
+        }
+        bool operator==(const station_and_time& other) const{
+            return station_ID==other.station_ID&&t==other.t;
+        }
+        bool operator!=(const station_and_time& other) const{
+            return !(station_ID==other.station_ID&&t==other.t);
+        }
     };
     struct transfer{
         my_string<21> train_ID_1;
@@ -171,7 +212,8 @@ public:
 public:
     sjtu::MapDatabase<TrainInformationSystem::key,TrainInformationSystem::train_basic_information> train_inf;
     sjtu::MapDatabase<TrainInformationSystem::key,TrainInformationSystem::train_basic_information> released_train_inf;
-    sjtu::MapDatabase<TrainInformationSystem::day_key,TrainInformationSystem::remained_seat> remained_s;//可能导致mle，若如此则换其它方式存，如一个key与value分离的BPT。
+    sjtu::MapDatabase<TrainInformationSystem::day_key,TrainInformationSystem::remained_seat> remained_s;
+    //可能导致mle，若如此则换其它方式存，如一个key与value分离的BPT。
     sjtu::BPT<TrainInformationSystem::station_key,TrainInformationSystem::stop> stops;
     TrainInformationSystem(): train_inf("train_inf","train_inf_index"),
                               released_train_inf("released_train_inf","released_train_inf_index"),
@@ -220,7 +262,12 @@ public:
     void delete_train(const TrainInformationSystem::key& k){
         train_inf.erase(k);
     }
-
+    void clean(){
+        train_inf.clear();
+        released_train_inf.clear();
+        remained_s.clear();
+        stops.clear_file();
+    }
 };
 #endif //TRAIN_HPP
 

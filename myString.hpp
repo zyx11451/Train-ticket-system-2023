@@ -257,6 +257,10 @@ public:
         total_minutes+=min;
         return *this;
     }
+    Time& operator-=(int min){
+        total_minutes-=min;
+        return *this;
+    }
     Time operator+(const int min) const{
         Time a;
         a.total_minutes=total_minutes+min;
@@ -269,6 +273,24 @@ public:
         if(&other== this) return *this;
         total_minutes=other.total_minutes;
         return *this;
+    }
+    bool operator<(const Time &other) const{
+        return total_minutes<other.total_minutes;
+    }
+    bool operator<=(const Time &other) const{
+        return total_minutes<=other.total_minutes;
+    }
+    bool operator>(const Time &other) const{
+        return total_minutes>other.total_minutes;
+    }
+    bool operator>=(const Time &other) const{
+        return total_minutes>=other.total_minutes;
+    }
+    bool operator==(const Time &other) const{
+        return total_minutes==other.total_minutes;
+    }
+    bool operator!=(const Time &other) const{
+        return total_minutes!=other.total_minutes;
     }
     int show_day() const{
         return total_minutes/1440;
@@ -298,10 +320,16 @@ public:
     };
 };
 class ConcreteTime{
+public:
     Calendar date;
     Time t;
 public:
     ConcreteTime()=default;
+    ConcreteTime(Calendar c,Time ti){
+        date=c+ti.show_day();
+        ti.clean_day();
+        t=ti;
+    }
     ConcreteTime(int m,int d,int h,int min): date(m,d),t(h,min){};
     ConcreteTime& operator+=(int min){
         t+=min;
@@ -310,5 +338,36 @@ public:
             t.clean_day();
         }
     }
+    bool operator<(const ConcreteTime& other) const{
+        if(date!=other.date) return date<other.date;
+        else return t<other.t;
+    }
+    bool operator>(const ConcreteTime& other) const{
+        if(date!=other.date) return date>other.date;
+        else return t>other.t;
+    }
+    bool operator<=(const ConcreteTime& other) const{
+        if(date!=other.date) return date<other.date;
+        else return t<=other.t;
+    }
+    bool operator>=(const ConcreteTime& other) const{
+        if(date!=other.date) return date>other.date;
+        else return t>=other.t;
+    }
+    bool operator==(const ConcreteTime& other) const{
+        return date==other.date&&t==other.t;
+    }
+    bool operator!=(const ConcreteTime& other) const{
+        return !(date==other.date&&t==other.t);
+    }
+    int operator-(const ConcreteTime& other) const{
+        int day1=date.dis;
+        int day2=other.date.dis;
+        return (day2-day1)*1440+(t-other.t);
+    }
+    friend std::ostream &operator <<(std::ostream &out,const ConcreteTime&a){
+        out<<a.date<<a.t;
+        return out;
+    };
 };
 #endif //VECTOR_HPP_MYSTRING_HPP

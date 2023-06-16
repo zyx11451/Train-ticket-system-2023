@@ -16,6 +16,7 @@ public:
         status order_status;
         ConcreteTime start_time;
         ConcreteTime end_time;
+        Calendar train_day;//列车从始发站出发时间
         my_string<31> from_station;
         my_string<31> to_station;
         my_string<21> train_ID;
@@ -24,9 +25,32 @@ public:
         int num;
         int from_station_num;
         int to_station_num;
+        //为了实现从新到旧所以反过来
+        bool operator<(const order& other) const{
+            return timestamp>other.timestamp;
+        }
+        bool operator>(const order& other) const{
+            return timestamp<other.timestamp;
+        }
+        bool operator<=(const order& other) const{
+            return timestamp>=other.timestamp;
+        }
+        bool operator>=(const order& other) const{
+            return timestamp<=other.timestamp;
+        }
+        bool operator==(const order& other) const{
+            return timestamp==other.timestamp;
+        }
+        bool operator!=(const order& other) const{
+            return timestamp!=other.timestamp;
+        }
     };
 public:
     sjtu::BPT<TrainInformationSystem::day_key,OrderInformationSystem::order> pending_orders;
     sjtu::BPT<UsersInformation::User::key,OrderInformationSystem::order> all_orders;
+    void clean(){
+        pending_orders.clear_file();
+        all_orders.clear_file();
+    }
 };
 #endif //COMMAND_HPP_ORDERS_HPP
