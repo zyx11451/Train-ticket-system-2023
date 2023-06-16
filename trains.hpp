@@ -169,7 +169,7 @@ public:
             else return l.train_ID<r.train_ID;
         }
         static bool cmp_time(TrainInformationSystem::ticket &l, TrainInformationSystem::ticket &r){
-            if((l.end_time-l.begin_time)!=(r.end_time-r.begin_time)) return (l.end_time-l.begin_time)!=(r.end_time-r.begin_time);
+            if((l.end_time-l.begin_time)!=(r.end_time-r.begin_time)) return (l.end_time-l.begin_time)<(r.end_time-r.begin_time);
             else return l.train_ID<r.train_ID;
         }
     };
@@ -242,12 +242,13 @@ public:
         st.end_sale_date=inf.sale_date_end;
         st.arrival_time=inf.start_time;
         st.departure_time=inf.start_time;
-        while (dk.day!=inf.sale_date_end){
+        while (dk.day<=inf.sale_date_end){
             remained_s.insert(dk,rs);
             ++dk.day;
         }
         stops.insert(sk,st);
         for(int i=2;i<inf.station_num;++i){
+            sk.station_ID=inf.station_names[i];
             st.station_cur=i;
             st.arrival_time=st.departure_time+inf.travel_times[i-1];
             st.departure_time=st.arrival_time+inf.stop_over_times[i];
@@ -255,6 +256,7 @@ public:
             //此处time的hour可以大于23;
         }
         ++st.station_cur;
+        sk.station_ID=inf.station_names[inf.station_num];
         st.arrival_time=st.departure_time+inf.travel_times[inf.station_num-1];
         st.departure_time=st.arrival_time;
         stops.insert(sk,st);

@@ -26,9 +26,15 @@ public:
     void setInput(std::string &tar){
         buf=tar.c_str();
         end=buf+tar.length();
+        const char *useless=end-1;
+        while(*useless=='\r'||*useless=='\n'){
+            --end;
+            --useless;
+        }
     }
     void changeMode(Mode m){
         mode=m;
+        skipSpaces();
     }
     void skipSpaces(){
         while(*buf==' ') ++buf;
@@ -79,7 +85,7 @@ public:
     char getKey(){
         while(*buf != '-') ++buf;
         ++buf;
-        return *buf;
+        return *(buf++);
     };
     char getLetter(){
         char c;
@@ -245,7 +251,8 @@ private:
                 ans+=' ';
                 ans+=std::string(inf.mail_address);
                 ans+=' ';
-                ans+=char ('0'+inf.privilege);
+                if(inf.privilege<10) ans+=char ('0'+inf.privilege);
+                else ans+="10";
                 message(ans);
                 return;
             }
@@ -307,6 +314,9 @@ private:
                 if(n_changed) inf.name=n;
                 if(m_changed) inf.mail_address=m;
                 if(g_changed) inf.privilege=g;
+                UsersInformation::User::key us;
+                us.user_ID=user;
+                u.modify(us,inf);
                 std::string ans;
                 ans+=user;
                 ans+=' ';
@@ -493,6 +503,10 @@ private:
             message("-1");
             return;
         }
+        if(!tr.remained_s.exist(dk_)){
+            message("-1");
+            return;
+        }
         TrainInformationSystem::train_basic_information tbi=tr.train_inf.find(k_);
         TrainInformationSystem::remained_seat rs=tr.remained_s.find(dk_);
         std::string ans;
@@ -609,6 +623,7 @@ private:
             TrainInformationSystem::remained_seat rs=tr.remained_s.find(dk);
             answer.max_seat=rs.max_available(from_stop.station_cur,to_stop.station_cur);
             ans.push_back(answer);
+            ++i;
         }
         if(mode=="cost") sjtu::sort(ans,0,ans.size()-1,TrainInformationSystem::ticket::cmp_cost);
         else sjtu::sort(ans,0,ans.size()-1,TrainInformationSystem::ticket::cmp_time);
@@ -715,7 +730,7 @@ private:
                             }
                         }
                         now_cost_2=tbi2.total_prices[station2]-tbi2.total_prices[i];
-                        now_start_1= ConcreteTime(c,now);
+                        now_start_1= ConcreteTime(c-(tmp.departure_time.show_day()),tmp.departure_time);
                         now_end_1= ConcreteTime(c,arrive_time1);
                         now_start_2= c_first_available_train2;
                         now_end_2=ConcreteTime(c_first_available_train2.date,c_first_available_train2.t+train2_time);
@@ -736,7 +751,7 @@ private:
                             total_time=now_total_time;
                             transfer_station.station_ID=now_station.station_ID;
                             TrainInformationSystem::day_key dk1;
-                            dk1.day=c;
+                            dk1.day=c-(tmp.departure_time.show_day());
                             dk1.train_ID=train_a_1.train_ID;
                             TrainInformationSystem::remained_seat rs1=tr.remained_s.find(dk1);
                             seat_num_1=rs1.max_available(tmp.station_cur,j);
@@ -794,6 +809,7 @@ private:
                     }
                 }
             }
+            trans_s.clear();
         }
         if(!successful) message("0");
         else{
@@ -869,6 +885,10 @@ private:
             if(tbi.station_names[ii]==from.station_ID){
                 start=ii;
                 dk.day-=(tbi.start_time+total_time).show_day();//是否跨天
+                if(dk.day<tbi.sale_date_begin||dk.day>tbi.sale_date_end){
+                    message("-1");
+                    return;
+                }
                 rs=tr.remained_s.find(dk);
             }
             if(tbi.station_names[ii]==to.station_ID){
@@ -1022,6 +1042,7 @@ private:
         }
     };
 public:
+    bool exit_flag= false;
     void clean(){
         ord.clean();
         tr.clean();
@@ -1031,7 +1052,7 @@ public:
     void s_exit(){
         log_in.clear();
         message("bye");
-        std::exit(0);
+        exit_flag=true;
     };
     void message(const std::string &ans) const{
         std::cout<<'['<<timeStamp<<']'<<' '<<ans<<'\n';

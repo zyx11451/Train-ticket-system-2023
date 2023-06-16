@@ -76,9 +76,10 @@ public:
     int date;
     int month;
     int dis;
-    int number_of_day[13];
+    static const int number_of_day[13];
 
     void date_to_dis(){
+        dis=0;
         for(int i=1;i<=month-1;i++){
             dis+=number_of_day[i];
         }
@@ -99,34 +100,10 @@ public:
         date=1;
         month=1;
         dis=0;
-        number_of_day[1]=31;
-        number_of_day[2]=28;
-        number_of_day[3]=31;
-        number_of_day[4]=30;
-        number_of_day[5]=31;
-        number_of_day[6]=30;
-        number_of_day[7]=31;
-        number_of_day[8]=31;
-        number_of_day[9]=30;
-        number_of_day[10]=31;
-        number_of_day[11]=30;
-        number_of_day[12]=31;
     }
     Calendar( int m, int d){
         month=m;
         date=d;
-        number_of_day[1]=31;
-        number_of_day[2]=28;
-        number_of_day[3]=31;
-        number_of_day[4]=30;
-        number_of_day[5]=31;
-        number_of_day[6]=30;
-        number_of_day[7]=31;
-        number_of_day[8]=31;
-        number_of_day[9]=30;
-        number_of_day[10]=31;
-        number_of_day[11]=30;
-        number_of_day[12]=31;
         date_to_dis();
     }
     bool operator==(const Calendar &a) const{
@@ -242,7 +219,7 @@ public:
         return out;
     };
 };
-
+const int Calendar::number_of_day[13]={0,31,28,31,30,31,30,31,31,30,31,30,31};;
 class Time{
 private:
     int total_minutes;
@@ -366,7 +343,7 @@ public:
         return (day2-day1)*1440+(t-other.t);
     }
     friend std::ostream &operator <<(std::ostream &out,const ConcreteTime&a){
-        out<<a.date<<a.t;
+        out<<a.date<<' '<<a.t;
         return out;
     };
 };

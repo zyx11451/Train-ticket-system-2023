@@ -9,7 +9,7 @@
 #define BPT_HPP_MAPDATABASE_HPP
 namespace sjtu{
     template<class T>
-    void sort(sjtu::vector<T> tar,int begin,int end,bool(*cmp)(T&,T&)){
+    void sort(sjtu::vector<T> &tar,int begin,int end,bool(*cmp)(T&,T&)){
         //end是最后一个元素指针
         if(end<=begin) return;
         int i=begin;
@@ -81,13 +81,16 @@ namespace sjtu{
                 index_file.open(index_file_name);
                 len=0;
                 amount=0;
+                write_index();
             }else{
                 index_file.open(index_file_name);
                 read_index();
             }
+            //std::cout<<"successful"<<'\n';
         }
         ~MapDatabase(){
             write_index();
+            //std::cout<<"successful"<<'\n';
         }
         void insert(const key &k, information &inf){
             ++len;

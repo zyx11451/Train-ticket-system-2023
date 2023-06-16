@@ -48,6 +48,7 @@ public:
 public:
     sjtu::BPT<TrainInformationSystem::day_key,OrderInformationSystem::order> pending_orders;
     sjtu::BPT<UsersInformation::User::key,OrderInformationSystem::order> all_orders;
+    OrderInformationSystem(): pending_orders("pending_nodes","pending_blocks"), all_orders("all_orders_nodes","all_orders_blocks"){};
     void clean(){
         pending_orders.clear_file();
         all_orders.clear_file();
