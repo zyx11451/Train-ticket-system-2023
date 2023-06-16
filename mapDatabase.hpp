@@ -10,14 +10,16 @@
 namespace sjtu{
     template<class T>
     void sort(sjtu::vector<T> &tar,int begin,int end,bool(*cmp)(T&,T&)){
-        //end是最后一个元素指针
+        //快速排序
+        //end是最后一个元素位置
         if(end<=begin) return;
         int i=begin;
         int j=end;
         int e=begin+((end-begin+1)>>1);
+        T divide=tar[e];
         while(true){
-            while(cmp(tar[i],tar[e])) ++i;
-            while(cmp(tar[e],tar[j])) --j;
+            while(cmp(tar[i],divide)) ++i;
+            while(cmp(divide,tar[j])) --j;
             if(i>=j) break;
             std::swap(tar[i],tar[j]);
         }

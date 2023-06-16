@@ -221,7 +221,7 @@ public:
 };
 const int Calendar::number_of_day[13]={0,31,28,31,30,31,30,31,31,30,31,30,31};;
 class Time{
-private:
+public:
     int total_minutes;
 public:
     Time(){
@@ -314,6 +314,15 @@ public:
             date+=t.show_day();
             t.clean_day();
         }
+        return *this;
+    }
+    ConcreteTime& operator-=(int min){
+        while(t.total_minutes<min){
+            t.total_minutes+=1440;
+            --date;
+        }
+        t.total_minutes-=min;
+        return *this;
     }
     bool operator<(const ConcreteTime& other) const{
         if(date!=other.date) return date<other.date;
@@ -340,7 +349,7 @@ public:
     int operator-(const ConcreteTime& other) const{
         int day1=date.dis;
         int day2=other.date.dis;
-        return (day2-day1)*1440+(t-other.t);
+        return (day1-day2)*1440+(t-other.t);
     }
     friend std::ostream &operator <<(std::ostream &out,const ConcreteTime&a){
         out<<a.date<<' '<<a.t;

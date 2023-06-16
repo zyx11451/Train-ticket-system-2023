@@ -20,6 +20,7 @@ public:
         my_string<31> from_station;
         my_string<31> to_station;
         my_string<21> train_ID;
+        my_string<21> user_ID;
         int timestamp;
         int price;
         int num;

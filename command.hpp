@@ -503,11 +503,12 @@ private:
             message("-1");
             return;
         }
-        if(!tr.remained_s.exist(dk_)){
+
+        TrainInformationSystem::train_basic_information tbi=tr.train_inf.find(k_);
+        if(dk_.day<tbi.sale_date_begin||dk_.day>tbi.sale_date_end){
             message("-1");
             return;
         }
-        TrainInformationSystem::train_basic_information tbi=tr.train_inf.find(k_);
         TrainInformationSystem::remained_seat rs=tr.remained_s.find(dk_);
         std::string ans;
         ans+=std::string(k_.train_ID);
@@ -697,11 +698,11 @@ private:
                 if(tk1==tk2) continue;
                 TrainInformationSystem::train_basic_information tbi2=tr.released_train_inf.find(tk2);
                 int station2=tmp2.station_cur;
-                Time time_sum2=tmp2.departure_time;
+                Time time_sum2=tmp2.arrival_time;
                 int train2_time=0;
                 for(int i=station2-1;i>=1;--i){
                     //求当前站的出发时间
-                    time_sum2-=tbi2.stop_over_times[i+1];
+                    if(i!=station2-1) time_sum2-=tbi2.stop_over_times[i+1];
                     time_sum2-=tbi2.travel_times[i];
                     if(i==station2-1) train2_time+=tbi2.travel_times[i];
                     else train2_time+=(tbi2.stop_over_times[i+1]+tbi2.travel_times[i]);
@@ -723,7 +724,7 @@ private:
                         ConcreteTime now_start_1,now_end_1;
                         ConcreteTime now_start_2,now_end_2;
                         int j;
-                        for(j=tmp.station_cur+1;j<=tbi1.station_num;++i){
+                        for(j=tmp.station_cur+1;j<=tbi1.station_num;++j){
                             if(tbi1.station_names[j]==tbi2.station_names[i]){
                                 now_cost_1=tbi1.total_prices[j]-tbi1.total_prices[tmp.station_cur];
                                 break;
@@ -756,7 +757,7 @@ private:
                             TrainInformationSystem::remained_seat rs1=tr.remained_s.find(dk1);
                             seat_num_1=rs1.max_available(tmp.station_cur,j);
                             TrainInformationSystem::day_key dk2;
-                            dk2.day=start2.date;
+                            dk2.day=end2.date-(tmp2.departure_time.show_day());
                             dk2.train_ID=train_a_2.train_ID;
                             TrainInformationSystem::remained_seat rs2=tr.remained_s.find(dk2);
                             seat_num_2=rs2.max_available(i,station2);
@@ -796,12 +797,12 @@ private:
                             total_time=now_total_time;
                             transfer_station.station_ID=now_station.station_ID;
                             TrainInformationSystem::day_key dk1;
-                            dk1.day=c;
+                            dk1.day=c-(tmp.departure_time.show_day());
                             dk1.train_ID=train_a_1.train_ID;
                             TrainInformationSystem::remained_seat rs1=tr.remained_s.find(dk1);
                             seat_num_1=rs1.max_available(tmp.station_cur,j);
                             TrainInformationSystem::day_key dk2;
-                            dk2.day=start2.date;
+                            dk2.day=end2.date-(tmp2.departure_time.show_day());
                             dk2.train_ID=train_a_2.train_ID;
                             TrainInformationSystem::remained_seat rs2=tr.remained_s.find(dk2);
                             seat_num_2=rs2.max_available(i,station2);
@@ -915,6 +916,7 @@ private:
             tr.remained_s.change(dk,rs);
             OrderInformationSystem::order od;
             od.timestamp=timeStamp;
+            od.user_ID=user;
             od.start_time=ConcreteTime(dk.day,tbi.start_time+total_time);
             od.end_time=ConcreteTime(dk.day,tbi.start_time+travel_t);
             od.train_ID=dk.train_ID;
@@ -937,6 +939,7 @@ private:
             }else{
                 OrderInformationSystem::order od;
                 od.timestamp=timeStamp;
+                od.user_ID=user;
                 od.start_time=ConcreteTime(dk.day,tbi.start_time+total_time);
                 od.end_time=ConcreteTime(dk.day,tbi.start_time+travel_t);
                 od.train_ID=dk.train_ID;
@@ -994,9 +997,11 @@ private:
                 if(now_remain>=now_waiting.num){
                     rs.modify(now_waiting.from_station_num,now_waiting.to_station_num-1,-now_waiting.num);
                     ord.pending_orders.erase(dk,now_waiting);
-                    ord.all_orders.erase(user,now_waiting);
+                    UsersInformation::User::key nw_user;
+                    nw_user.user_ID=now_waiting.user_ID;
+                    ord.all_orders.erase(nw_user,now_waiting);
                     now_waiting.order_status=OrderInformationSystem::success;
-                    ord.all_orders.insert(user,now_waiting);
+                    ord.all_orders.insert(nw_user,now_waiting);
                     //此处可进一步优化(为bpt添加更改操作而非先删除再插入)
 
                 }
